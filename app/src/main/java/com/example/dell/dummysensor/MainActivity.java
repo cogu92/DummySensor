@@ -1,13 +1,16 @@
 package com.example.dell.dummysensor;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.List;
@@ -17,6 +20,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager mSerivicemanager;
     private Sensor mproximity;
     private Sensor maccelerometer;
+    private RelativeLayout mMainRelativeLayout;
+    private   long oldtime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,11 +29,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mSerivicemanager=(SensorManager) getSystemService(Context.SENSOR_SERVICE);
         List<Sensor> sensorList = this.mSerivicemanager.getSensorList(Sensor.TYPE_ALL);
         printSensorlist(sensorList);
+        mMainRelativeLayout=(RelativeLayout) findViewById(R.id.activity_main);
 
       mproximity=   mSerivicemanager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         maccelerometer=   mSerivicemanager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         Log.i("",this.maccelerometer==null ? "null":"ok accelerometer");
         Log.i("","max"+this.maccelerometer.getMaximumRange());
+        oldtime=System.currentTimeMillis();
     }
 
     private void printSensorlist(List<Sensor> sensorList) {
@@ -66,8 +73,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         float yacc=event.values[1];
         float zacc=event.values[2];
         double magnitude = (Math.pow(xacc,2)+ Math.pow(yacc,2)+Math.pow(zacc,2))/(Math.pow(SensorManager.GRAVITY_EARTH,2));
-        if(magnitude>9.8)
-        {}
+     //   double magnitude = (xacc*xacc+ yacc*yacc+zacc*zacc)/(SensorManager.GRAVITY_EARTH*SensorManager.GRAVITY_EARTH);
+     long currenttime=event.timestamp;
+
+        if(magnitude>5.0 && (currenttime-oldtime)>1000000000)
+        {
+            Log.e("","SHUFUL");
+            oldtime=currenttime;
+
+            int currentcolor =((ColorDrawable)mMainRelativeLayout.getBackground()).getColor();
+            if(currentcolor==ContextCompat.getColor(this,R.color.black))
+             mMainRelativeLayout.setBackgroundColor(ContextCompat.getColor(this,R.color.blue));
+            else
+               mMainRelativeLayout.setBackgroundColor(ContextCompat.getColor(this,R.color.black));
+
+        }
     }
 
 

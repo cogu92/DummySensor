@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DummySensor</string>
+    <string name="shuffle_the_device_to_turn_the_screen_color_text">Shuffle the device to turn the screen color</string>
 </resources>
